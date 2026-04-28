@@ -17,20 +17,42 @@ public class BruteforceClientAppApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        int maxRequests = 25;
-                for (int i = 0; i < maxRequests; i++) {
+        String username = "admin";
+
+        String [] passwords =
+                {
+                "12345",
+                "password",
+                "wrongpassword",
+                "test1234",
+                "secret",
+                "secret123",
+                "aftercorrect"
+                };
+
+                for (String password : passwords) {
+                    LoginRequest loginRequest = new LoginRequest(username, password);
+
                     try {
-                        String response = restClient.get()
-                                .uri("http://localhost:8080/work")
+                        String response = restClient.post()
+                                .uri("http://localhost:8080/login")
+                                .body(loginRequest)
                                 .retrieve()
                                 .body(String.class);
-                        System.out.println(response);
 
+                        System.out.println("Testing password: " + password + " | status: 200");
+                        System.out.println("Correct password: " + password);
+                        System.out.println("Response from server: " + response);
+                        break;
                     } catch (RestClientResponseException e){
-                        System.out.println(e.getResponseBodyAsString());
+                        HttpStatusCode statusCode = e.getStatusCode();
+                        System.out.println("Testing password: " + password + " " + statusCode.value());
                     }
-                    Thread.sleep(300);
+
+
                 }
+
+
 
     }
 
